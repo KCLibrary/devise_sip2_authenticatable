@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.summary  = 'Devise extension to allow authentication via Sip2'
   s.email = 'kardeiz@gmail.com'
-  s.homepage = '#'
+  s.homepage = 'http://example.com/#'
   s.description = s.summary
   s.authors = ['Curtis Schiewek', 'Daniel McNevin', 'Steven Xu']
   s.license = 'MIT'
