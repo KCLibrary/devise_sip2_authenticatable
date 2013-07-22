@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.email = 'kardeiz@gmail.com'
   s.homepage = 'http://example.com/#'
   s.description = s.summary
-  s.authors = ['Curtis Schiewek', 'Daniel McNevin', 'Steven Xu']
+  s.authors = ['Jacob Brown']
   s.license = 'MIT'
 
   s.files         = `git ls-files`.split("\n")

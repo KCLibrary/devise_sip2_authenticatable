@@ -9,6 +9,13 @@ module Devise
         attr_accessor :password_confirmation
       end
       
+      def password=(new_password)
+        @password = new_password
+        if defined?(password_digest) && @password.present? && respond_to?(:encrypted_password=)
+          self.encrypted_password = password_digest(@password) 
+        end
+      end      
+      
       def sip2_auth_hash(auth_key_value, password)
         s = Devise::Sip2.new
         s.get_patron_information(:patron => auth_key_value, :patron_pwd => password)
@@ -28,13 +35,12 @@ module Devise
           if resource.blank?
             resource = new
             resource[auth_key] = auth_key_value
-            resource.password = attributes[:password]
           end
           
           sip2_obj = resource.sip2_auth_hash(auth_key_value, attributes[:password])
           
           if sip2_obj.delete(:valid)
-            resource.try(:assign_attributes=, sip2_obj)
+            resource.try(:assign_attributes, sip2_obj)
             resource.save! if resource.new_record? or resource.changed?
             return resource
           else

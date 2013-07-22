@@ -47,8 +47,12 @@ module Devise
     def parse_patron_information_response(response)
       valid = !!(response =~ /\|CQY\|/)
       name = response.match(/\|AE([^\|]*)/)[1] rescue nil
+      last_name, first_name = name.split(/,\s+/) if name
       email = response.match(/\|BE([^\|]*)/)[1].split(/,/).first rescue nil
-      { :valid => valid, :name => name, :email => email }
+      { :valid => valid,
+        :last_name => last_name,
+        :first_name => first_name,
+        :email => email }
     end    
   end
   
@@ -57,13 +61,12 @@ module Devise
     require 'socket'
     include Sip2Utilities
     attr_accessor :ao
-
-    SIP2_CONFIG = YAML.load_file("#{Rails.root}/config/sip2.yml")[Rails.env]
     
-    def initialize()  
-      host = SIP2_CONFIG.fetch('host', 'localhost')
-      port = SIP2_CONFIG.fetch('port', 6001)
-      @ao = SIP2_CONFIG.fetch('ao', nil)
+    def initialize()
+      config = YAML.load_file("#{Rails.root}/config/sip2.yml")[Rails.env]
+      host = config.fetch('host', 'localhost')
+      port = config.fetch('port', 6001)
+      @ao = config.fetch('ao', nil)
       @socket = connect(host, port)
       @seq = -1    
     end
@@ -78,6 +81,7 @@ module Devise
       type = params.fetch(:type, '      ')
       msg = msg_patron_information(next_seq, patron, patron_pwd, @ao, type)
       response = process_request(msg)
+      close
       parse_patron_information_response(response)
     end
       

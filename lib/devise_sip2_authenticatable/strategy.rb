@@ -7,7 +7,7 @@ module Devise
         auth = authentication_hash.merge(:password => password)
         resource = valid_password? && mapping.to.authenticate_with_sip2(auth)
         return fail(:invalid) unless resource
-        success! if validate(resource)
+        success!(resource) if validate(resource)
       end
     end
   end
