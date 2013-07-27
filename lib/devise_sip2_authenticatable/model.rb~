@@ -40,6 +40,9 @@ module Devise
           sip2_obj = resource.sip2_auth_hash(auth_key_value, attributes[:password])
           
           if sip2_obj.delete(:valid)
+            if resource.respond_to?(:sip2_before_save)
+              resource.sip2_before_save(auth_key_value, attributes[:password]) 
+            end
             resource.try(:assign_attributes, sip2_obj)
             resource.save! if resource.new_record? or resource.changed?
             return resource
