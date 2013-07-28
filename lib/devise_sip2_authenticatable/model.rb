@@ -16,15 +16,16 @@ module Devise
         end
       end      
       
-      def sip2_auth_hash(_auth)
+      def sip2_auth_hash(patron, patron_pwd)
         s = Devise::Sip2.new
-        s.get_patron_information(_auth)
+        s.get_patron_information(:patron => patron, :patron_pwd => patron_pwd)
       end
       
       module ClassMethods
         def authenticate_with_sip2(attributes={})
           auth_key = self.authentication_keys.first
           return nil unless attributes[auth_key].present?
+          
           auth_key_value = attributes[auth_key]
           
           if self.case_insensitive_keys.try :include?, auth_key
@@ -35,13 +36,13 @@ module Devise
             auth_key_value.strip!
           end
           
-          resource = where(auth_key => auth_key_value).first_or_initialize
-          _auth = { :patron => auth_key_value, :patron_pwd => attributes[:password] }         
-          sip2_obj = resource.sip2_auth_hash(_auth)
+          resource = where(auth_key => auth_key_value).first_or_initialize                  
+          sip2_obj = resource.sip2_auth_hash(auth_key_value, attributes[:password])
           
           if sip2_obj.delete(:valid)
-            if resource.respond_to?(:sip2_before_save)
-              resource.sip2_before_save( sip2_obj.merge(_auth) )
+            if resource.respond_to?(:after_sip2_validation)
+              _auth = { auth_key.to_sym => auth_key_value, :password => attributes[:password] } 
+              resource.after_sip2_validation( sip2_obj.merge(_auth) )
             end
             resource.save! if resource.new_record? or resource.changed?
             return resource

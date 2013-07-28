@@ -62,7 +62,7 @@ module Devise
     include Sip2Utilities
     
     def initialize      
-      config_file = Dir.glob("#{Rails.root}/config/**/sip2.yml").first
+      config_file = Dir.glob("#{Rails.root}/**/sip2.yml").first
       config = config_file ? YAML.load_file(config_file)[Rails.env] : {}
       host = config.fetch('host', 'localhost')
       port = config.fetch('port', 6001)
