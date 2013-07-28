@@ -30,7 +30,7 @@ In your user model, make sure you specify `:sip2_authenticatable` as a Devise st
 
     devise :sip2_authenticatable, :rememberable, :trackable
 
-That's pretty much it. After validating a user, this gem will call a method `:after_sip2_validation` with a post-validation authentication hash, if this method is defined on your user model. You can use this method to store information about your user. Currently the hash contains the following fields/values: 
+That's pretty much it. After validating a user, this gem will call a method `:after_sip2_validation` with a post-validation authentication hash as argument, if this method is defined on your user model. You can use this method to store information about your user. Currently the hash contains the following fields/values: 
 
     <auth_key>, password, last_name, first_name, email
 
