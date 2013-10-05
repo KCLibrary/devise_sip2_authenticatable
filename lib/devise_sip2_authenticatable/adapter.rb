@@ -68,10 +68,8 @@ module Devise
       }.call
     end
     
-    CONFIG = self.config
-    
     def initialize      
-      config = CONFIG
+      config = self.class.config
       host = config.fetch('host', 'localhost')
       port = config.fetch('port', 6001)
       @ao = config.fetch('ao', nil)
