@@ -31,24 +31,24 @@ module Devise
     end
     
     def msg_patron_information(seq, patron, patron_pwd, ao, type, ac = '')
-      _msg = [ '63', 
+      msg = [ '63', 
         justifier(LANGUAGE, 3),
         justifier(timestamp, 18),
-        justifier(sprintf("%-10s",type), 10),
+        justifier(sprintf("%-10s", type), 10),
         field_build('AO', ao),
         field_build('AA', patron),
         field_build('AD', patron_pwd),
         field_build('BP', '1'),
         field_build('BQ', '5'),
         'AY', seq, 'AZ' ].join
-      msg_finalize(_msg)
+      msg_finalize(msg)
     end
     
     def parse_patron_information_response(response)
       valid = !!(response =~ /\|CQY\|/)
-      name = response.match(/\|AE([^\|]*)/)[1] rescue nil
+      name = response.match(/\|AE([^\|]*)/) {|m| m[1] }
       last_name, first_name = name.split(/,\s+/) if name
-      email = response.match(/\|BE([^\|]*)/)[1].split(/,/).first rescue nil
+      email = response.match(/\|BE([^\|]*)/) {|m| m[1].split(/,/).first }
       { :valid => valid,
         :last_name => last_name,
         :first_name => first_name,
@@ -61,9 +61,17 @@ module Devise
     require 'socket'
     include Sip2Utilities
     
+    def self.config
+      @@config ||= proc {
+        config_file = Dir.glob("#{Rails.root}/config/**/sip2.yml").first
+        config_file ? YAML.load_file(config_file)[Rails.env] : {}
+      }.call
+    end
+    
+    CONFIG = self.config
+    
     def initialize      
-      config_file = Dir.glob("#{Rails.root}/config/**/sip2.yml").first
-      config = config_file ? YAML.load_file(config_file)[Rails.env] : {}
+      config = CONFIG
       host = config.fetch('host', 'localhost')
       port = config.fetch('port', 6001)
       @ao = config.fetch('ao', nil)

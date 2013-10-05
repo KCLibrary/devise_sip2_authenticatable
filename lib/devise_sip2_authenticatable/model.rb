@@ -7,14 +7,7 @@ module Devise
       included do
         attr_reader :current_password, :password
         attr_accessor :password_confirmation
-      end
-      
-      def password=(new_password)
-        @password = new_password
-        if defined?(password_digest) && @password.present? && respond_to?(:encrypted_password=)
-          self.encrypted_password = password_digest(@password) 
-        end
-      end      
+      end 
       
       def sip2_auth_hash(patron, patron_pwd)
         s = Devise::Sip2.new
