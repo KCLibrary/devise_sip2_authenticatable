@@ -62,13 +62,13 @@ module Devise
     include Sip2Utilities
     
     def self.config
-      @@config ||= lambda {
+      @@config ||= begin
         config_file = Dir.glob("#{Rails.root}/config/**/sip2.yml").first
         if config_file
           YAML.load(ERB.new(File.read(config_file)).result)[Rails.env]
         else {}
         end
-      }.call
+      end
     end
     
     def initialize      
